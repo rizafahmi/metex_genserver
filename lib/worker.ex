@@ -18,10 +18,20 @@ defmodule MetexGenserver.Worker do
     GenServer.cast(pid, :reset_state)
   end
 
+  def stop(pid) do
+    GenServer.cast(pid, :stop)
+  end
+
   ## Server Callbacks
 
   def init(:ok) do
     {:ok, %{}}
+  end
+
+  def terminate(reason, state) do
+    IO.puts "server terminated because of #{reason}"
+
+    inspect state
   end
 
   def handle_call({:location, location}, _from, state) do
@@ -41,6 +51,15 @@ defmodule MetexGenserver.Worker do
 
   def handle_cast(:reset_state, _state) do
     {:noreply, %{}}
+  end
+
+  def handle_cast(:stop, state) do
+    {:stop, :normal, state}
+  end
+
+  def handle_info(msg, state) do
+    IO.puts "received #{inspect msg}"
+    {:noreply, state}
   end
 
   ## Helpers Functions
